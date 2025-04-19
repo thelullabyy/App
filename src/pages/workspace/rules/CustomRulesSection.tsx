@@ -17,12 +17,7 @@ function CustomRulesSection({policyID}: CustomRulesSectionProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
     const policy = usePolicy(policyID);
-    const parsedRules = useMemo(() => {
-        const customRules = policy?.customRules ?? '';
-        const options = policy?.isLoading ? {shouldEscapeText: false} : undefined;
-
-        return getParsedComment(customRules, options);
-    }, [policy]);
+    const parsedRules = policy?.customRules ?? '';
     const rulesDescription = typeof parsedRules === 'string' ? parsedRules : '';
 
     return (
