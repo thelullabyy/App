@@ -59,6 +59,7 @@ function AttachmentCarouselView({
     onClose,
     setPage,
     attachmentID,
+    setAttachmentLoaded,
 }: AttachmentCarouselViewProps) {
     const {translate} = useLocalize();
     const styles = useThemeStyles();
@@ -159,8 +160,9 @@ function AttachmentCarouselView({
             onScaleChanged: handleScaleChange,
             onSwipeDown: onClose,
             onAttachmentError,
+            onAttachmentLoaded: setAttachmentLoaded,
         }),
-        [onAttachmentError, source, isPagerScrolling, isScrollEnabled, handleTap, handleScaleChange, onClose],
+        [onAttachmentError, source, isPagerScrolling, isScrollEnabled, handleTap, handleScaleChange, onClose, setAttachmentLoaded],
     );
 
     /** Defines how a single attachment should be rendered */

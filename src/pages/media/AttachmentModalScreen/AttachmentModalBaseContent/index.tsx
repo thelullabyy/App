@@ -6,6 +6,7 @@ import AttachmentCarousel from '@components/Attachments/AttachmentCarousel';
 import AttachmentCarouselPagerContext from '@components/Attachments/AttachmentCarousel/Pager/AttachmentCarouselPagerContext';
 import AttachmentView from '@components/Attachments/AttachmentView';
 import useAttachmentErrors from '@components/Attachments/AttachmentView/useAttachmentErrors';
+import useAttachmentLoaded from '@components/Attachments/AttachmentView/useAttachmentLoaded';
 import type {Attachment} from '@components/Attachments/types';
 import BlockingView from '@components/BlockingViews/BlockingView';
 import Button from '@components/Button';
@@ -275,12 +276,29 @@ function AttachmentModalBaseContent({
     // props.isReceiptAttachment will be null until its certain what the file is, in which case it will then be true|false.
     const headerTitle = useMemo(() => headerTitleProp ?? translate(isReceiptAttachment ? 'common.receipt' : 'common.attachment'), [headerTitleProp, isReceiptAttachment, translate]);
     const shouldShowThreeDotsButton = useMemo(() => isReceiptAttachment && threeDotsMenuItems.length !== 0, [isReceiptAttachment, threeDotsMenuItems.length]);
+    const {setAttachmentLoaded, isAttachmentLoaded} = useAttachmentLoaded();
+
     const shouldShowDownloadButton = useMemo(() => {
-        if ((!isEmptyObject(report) || type === CONST.ATTACHMENT_TYPE.SEARCH) && !isErrorInAttachment(sourceState)) {
-            return allowDownload && isDownloadButtonReadyToBeShown && !shouldShowNotFoundPage && !isReceiptAttachment && !isOffline && !isLocalSource;
+        const isValidContext = !isEmptyObject(report) || type === CONST.ATTACHMENT_TYPE.SEARCH;
+
+        if (isValidContext && !isErrorInAttachment(sourceState)) {
+            return allowDownload && isDownloadButtonReadyToBeShown && !shouldShowNotFoundPage && !isReceiptAttachment && !isOffline && !isLocalSource && isAttachmentLoaded(sourceState);
         }
+
         return false;
-    }, [allowDownload, isDownloadButtonReadyToBeShown, isErrorInAttachment, isLocalSource, isOffline, isReceiptAttachment, report, shouldShowNotFoundPage, sourceState, type]);
+    }, [
+        allowDownload,
+        isDownloadButtonReadyToBeShown,
+        isErrorInAttachment,
+        isLocalSource,
+        isOffline,
+        isReceiptAttachment,
+        report,
+        shouldShowNotFoundPage,
+        sourceState,
+        type,
+        isAttachmentLoaded,
+    ]);
 
     const isPDFLoadError = useRef(false);
     const onPdfLoadError = useCallback(() => {
@@ -355,6 +373,7 @@ function AttachmentModalBaseContent({
                         // We shouldn't show carousel arrow in search result attachment
                         (!isEmptyObject(report) && !isReceiptAttachment && type !== CONST.ATTACHMENT_TYPE.SEARCH ? (
                             <AttachmentCarousel
+                                setAttachmentLoaded={setAttachmentLoaded}
                                 accountID={accountID}
                                 type={type}
                                 attachmentID={attachmentID}
