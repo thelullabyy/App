@@ -9913,6 +9913,31 @@ describe('ReportUtils', () => {
 
             expect(result).toBe(true);
         });
+        it('should return false when the current user is an anonymous user', async () => {
+            // Given a policy announce room of a policy that the user has an admin role (which otherwise allows writing)
+            const workspace: Policy = {...createRandomPolicy(1, CONST.POLICY.TYPE.TEAM), role: CONST.POLICY.ROLE.ADMIN};
+            const policyAnnounceRoom: Report = {
+                ...createRandomReport(50001, CONST.REPORT.CHAT_TYPE.POLICY_ANNOUNCE),
+                participants: buildParticipantsFromAccountIDs([currentUserAccountID, 1]),
+                policyID: policy.id,
+                writeCapability: CONST.REPORT.WRITE_CAPABILITIES.ADMINS,
+            };
+
+            await Onyx.set(`${ONYXKEYS.COLLECTION.POLICY}${workspace.id}`, workspace);
+
+            // When the current user is signed in anonymously
+            await Onyx.merge(ONYXKEYS.SESSION, {authTokenType: CONST.AUTH_TOKEN_TYPES.ANONYMOUS});
+            await waitForBatchedUpdates();
+
+            const result = canUserPerformWriteAction(policyAnnounceRoom, false);
+
+            // Then it should return false even though the report would otherwise be writable
+            expect(result).toBe(false);
+
+            // Restore the session so other tests are unaffected
+            await Onyx.merge(ONYXKEYS.SESSION, {email: currentUserEmail, accountID: currentUserAccountID, authTokenType: undefined});
+            await waitForBatchedUpdates();
+        });
     });
 
     describe('shouldDisableRename', () => {

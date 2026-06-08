@@ -1010,7 +1010,6 @@ type ReportByPolicyMap = Record<string, OnyxCollection<Report>>;
 let deprecatedCurrentUserEmail: string | undefined;
 let deprecatedCurrentUserPrivateDomain: string | undefined;
 let deprecatedCurrentUserAccountID: number | undefined;
-let deprecatedIsAnonymousUser = false;
 
 let environmentURL: string;
 getEnvironmentURL().then((url: string) => (environmentURL = url));
@@ -1061,7 +1060,6 @@ Onyx.connect({
 
         deprecatedCurrentUserEmail = value.email;
         deprecatedCurrentUserAccountID = value.accountID;
-        deprecatedIsAnonymousUser = value.authTokenType === CONST.AUTH_TOKEN_TYPES.ANONYMOUS;
         deprecatedCurrentUserPrivateDomain = isEmailPublicDomain(deprecatedCurrentUserEmail ?? '') ? '' : Str.extractEmailDomain(deprecatedCurrentUserEmail ?? '');
     },
 });
@@ -10341,7 +10339,7 @@ function canUserPerformWriteAction(report: OnyxEntry<Report>, isReportArchived: 
     }
 
     return (
-        !isArchivedNonExpenseReport(report, isReportArchived) && isEmptyObject(reportErrors) && report && isAllowedToComment(report) && !deprecatedIsAnonymousUser && canWriteInReport(report)
+        !isArchivedNonExpenseReport(report, isReportArchived) && isEmptyObject(reportErrors) && report && isAllowedToComment(report) && !isAnonymousUserSession() && canWriteInReport(report)
     );
 }
 
