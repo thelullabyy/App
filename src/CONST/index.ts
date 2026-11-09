@@ -10327,6 +10327,9 @@ const CONST = {
     },
 
     SENTRY_LABEL: {
+        LOADING_BAR_STORY: {
+            TOGGLE: 'LoadingBarStory-Toggle',
+        },
         TEXT_INPUT: {
             CLEAR_BUTTON: 'TextInput-ClearButton',
         },

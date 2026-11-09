@@ -4,6 +4,8 @@ import Text from '@components/Text';
 
 import useThemeStyles from '@hooks/useThemeStyles';
 
+import CONST from '@src/CONST';
+
 import type {Meta, StoryFn} from 'storybook-react-rsbuild';
 
 import React, {useState} from 'react';
@@ -32,7 +34,10 @@ function Template() {
                 <Text>Header</Text>
                 {isLoading && <LoadingBar />}
             </View>
-            <Button onPress={() => setIsLoading((value) => !value)}>
+            <Button
+                sentryLabel={CONST.SENTRY_LABEL.LOADING_BAR_STORY.TOGGLE}
+                onPress={() => setIsLoading((value) => !value)}
+            >
                 <Button.Text>{isLoading ? 'Hide loading bar' : 'Show loading bar'}</Button.Text>
             </Button>
         </View>
